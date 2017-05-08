@@ -61,7 +61,7 @@ describe('Colour Service', () => {
         describe("success", () => {
             it("returns one palette correctly formatted", () => {
                 backend.connections.subscribe(connection => {
-                    expect(connection.request.url).to.equal("fakeUrl&color=" + colour + "&color_accuracy=30&includes=MainImage&tags=" + type);
+                    expect(connection.request.url).to.equal("fakeUrl&color=" + colour + "&color_accuracy=20&includes=MainImage&tags=" + type + "&page=1");
                     connection.mockRespond(new Response(<any>{
                         body: fakeResponse
                     }));

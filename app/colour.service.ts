@@ -22,9 +22,9 @@ export class ColourService {
         return this.jsonp.get(queryUrl).map((response: any) => {
             let paletteResponse = response._body[0];
             return {
-                    id: paletteResponse.id,
-                    name: paletteResponse.title,
-                    colours: paletteResponse.colors
+                    id: paletteResponse ? paletteResponse.id : 0,
+                    name: paletteResponse ? paletteResponse.title : "",
+                    colours: paletteResponse ? paletteResponse.colors : []
                 };
         });
     }

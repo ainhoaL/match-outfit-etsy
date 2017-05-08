@@ -2,7 +2,7 @@ var chai = require('chai');
 var expect = chai.expect;
 
 import { TestBed } from '@angular/core/testing';
-import { DebugElement }    from '@angular/core';
+import { DebugElement, NO_ERRORS_SCHEMA }    from '@angular/core';
 import { By } from '@angular/platform-browser';
 import { AppComponent } from '../app/app.component';
 import { FormsModule } from '@angular/forms';
@@ -34,6 +34,9 @@ let paletteResponse: Palette = {
 
 let listingsResponse = {
 	count: 2,
+	pagination: {
+		next_page: null
+	},
 	results: [{
 		url: "fakeurl",
 		title: "fakeListing",
@@ -72,7 +75,8 @@ describe('App', () => {
 		TestBed.configureTestingModule({ 
 			declarations: [AppComponent], 
 			imports: [ FormsModule, JsonpModule ],
-			providers: [ColourService, SearchService]
+			providers: [ColourService, SearchService],
+			schemas: [ NO_ERRORS_SCHEMA ]
 			// Why doesn't this work? It would be nice to stub them out, then maybe we don't need to import Http and Jsonp modules
 			/* providers: [
 				{provide: ColourService, useValue: colourServiceStub },
@@ -141,8 +145,8 @@ describe('App', () => {
 			});
 		});
 		it('displays listings with correct image and link', () => {
-			let listingsDiv = element.querySelector('.listingsRow');
-			let listingLink = listingsDiv.querySelector('a');
+			let listingsDiv = element.querySelector('.listings');
+			let listingLink = listingsDiv.querySelector('.itemIcon');
 			
 			expect(listingLink.getAttribute("href")).to.equal("fakeurl");
 
