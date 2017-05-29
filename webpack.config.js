@@ -1,34 +1,19 @@
-var path = require('path');
+'use strict';
 
-module.exports = {
-    entry:  {
-        javascript: './app/main.ts',
-        html: './app/index.html'
-    },
+console.log(process.env.NODE_ENV);
 
-    resolve: {
-        extensions: ['', '.ts', '.js']
-    },
-
-    module: {
-	    loaders: [
-		{
-            test: /\.ts$/,
-            exclude: /node_modules/,
-            loader: 'ts'
-        }, {
-            test: /\.html$/,
-            loader: 'file?name=[name].[ext]',
-        },
-        { test: /\.png$/, loader: 'url-loader?limit=100000' },
-        { test: /\.less$/, loader: 'style!css!less' },
-        { test: /\.css$/, loader: 'style!css' }
-
-        ]
-    },
-
-    output: {
-        filename: 'main.js',
-        path: path.join(process.cwd(), 'dist')
-    }
-}
+switch (process.env.NODE_ENV.trim()) {
+    case 'prod':
+    case 'production':
+        module.exports = require('./webpack.config.dev');
+        break;
+    case 'test':
+    case 'testing':
+        module.exports = require('./webpack.config.test');
+        break;
+    case 'dev':
+    case 'development':
+    default:
+        module.exports = require('./webpack.config.dev');
+        break;
+};

@@ -1,28 +1,51 @@
 var webpackConfig = require('./webpack.config.js');
+var path = require('path');
 
 module.exports = function (config) {
   config.set({
     basePath: '',
-	
-	reporters: ['progress'],
+    plugins: [
+      'karma-jasmine',
+      'karma-chrome-launcher',
+      'karma-chai',
+      'karma-coverage',
+      'karma-coverage-istanbul-reporter', 
+      'karma-webpack', 
+      'karma-sourcemap-loader',
+      'karma-angular',
+      'karma-typescript-preprocessor',
+      'karma-remap-coverage'
+    ],
+	  reporters: ['progress', 'coverage'],
     port: 9876,
     colors: true,
     logLevel: config.LOG_INFO,
     autoWatch: true,
     browsers: ['Chrome'],
-    singleRun: false,
+    singleRun: true,
     autoWatchBatchDelay: 300,
 
     frameworks: ['jasmine'],
 
     files: [
-      {pattern: './karma-test-shim.js', watched: false}
+      {pattern: 'karma-test-shim.js', watched: true}
     ],
 
     preprocessors: {
-      './karma-test-shim.js': ['webpack', 'sourcemap']
+      'karma-test-shim.js': ['webpack']
     },
 
+    coverageReporter: {
+            dir: 'coverage',
+            reporters: [
+                {
+                    type: 'json',
+                    subdir: '.',
+                    file: 'coverage.json'
+                }
+            ]
+        },
+        
     webpack: webpackConfig,
 
     webpackMiddleware: {

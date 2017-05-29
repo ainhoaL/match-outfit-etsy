@@ -15,6 +15,9 @@ var appContext = require.context('./tests', true, /\.spec\.ts/);
 
 appContext.keys().forEach(appContext);
 
+var coverageContext = require.context('./app', true, /\.ts/);
+coverageContext.keys().forEach(coverageContext);
+
 var testing = require('@angular/core/testing');
 var browser = require('@angular/platform-browser-dynamic/testing');
 

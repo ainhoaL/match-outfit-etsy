@@ -11,7 +11,7 @@ import { Observable } from 'rxjs';
 
 import { ColourService, Palette } from '../app/colour.service';
 import { SearchService } from '../app/search.service';
-import { itemTypes } from '../app/item.model';
+import { itemTypes, ItemFactory } from '../app/item.model';
 
 export const ButtonClickEvents = {
    left:  { button: 0 },
@@ -32,28 +32,23 @@ let paletteResponse: Palette = {
 		id: 1,
 		name: "seaside margaritas."};
 
-let listingsResponse = {
-	count: 2,
-	pagination: {
-		next_page: null
-	},
-	results: [{
-		url: "fakeurl",
-		title: "fakeListing",
-		MainImage: {
-			url_75x75: "fakeimageurl"
-		}
-	}, {
-		url: "fakeurl2",
-		title: "fakeListing2",
-		MainImage: {
-			url_75x75: "fakeimageurl2"
-		}
-	}]
-};
+let colourServiceStub, searchServiceStub, colourService, searchService, itemFactory, itemModelStub;
+let getPaletteSpy, createItemSpy, getListingsSpy;
+let listingsResponse, listingsObservable;
 
-let colourServiceStub, searchServiceStub, colourService, searchService;
-let getPaletteSpy, getListingsSpy;
+function createListings(numberOfListings: number) {
+	listingsResponse = [];
+
+	for(let i = 0; i < numberOfListings; i++) {
+		listingsResponse.push({
+			url: "fakeurl" + i,
+			title: "fakeListing" + i,
+			MainImage: {
+				url_75x75: "fakeimageurl" + i
+			}
+		});
+	}
+}
 
 describe('App', () => {
 	let fixture;
@@ -72,10 +67,22 @@ describe('App', () => {
 			}
 		};
 
+		itemModelStub = {
+			constructor(service, name, type, color) {
+				this.name = name;
+				this.type = type;
+				this.colour = color;
+			},
+			listings: listingsResponse,
+			getListings() {
+				return Observable.of(listingsResponse);
+			}
+		}
+
 		TestBed.configureTestingModule({ 
 			declarations: [AppComponent], 
 			imports: [ FormsModule, JsonpModule ],
-			providers: [ColourService, SearchService],
+			providers: [ColourService, SearchService, ItemFactory],
 			schemas: [ NO_ERRORS_SCHEMA ]
 			// Why doesn't this work? It would be nice to stub them out, then maybe we don't need to import Http and Jsonp modules
 			/* providers: [
@@ -88,9 +95,11 @@ describe('App', () => {
 
 		colourService = fixture.debugElement.injector.get(ColourService);
 		searchService = fixture.debugElement.injector.get(SearchService);
+		itemFactory = fixture.debugElement.injector.get(ItemFactory)
 
 		getPaletteSpy = spyOn(colourService, 'getPalette').and.returnValue(Observable.of(paletteResponse));
-		getListingsSpy = spyOn(searchService, 'getListings').and.returnValue(Observable.of(listingsResponse));
+		createItemSpy = spyOn(itemFactory, 'create').and.returnValue(itemModelStub);
+		getListingsSpy = spyOn(itemModelStub, 'getListings').and.callThrough();
 
 		component = fixture.componentInstance;
 	});
@@ -105,9 +114,11 @@ describe('App', () => {
     		expect(element.querySelectorAll('.itemRow').length).to.equal(0, 'there should be no items');
 		});
 	});
-
+	
 	describe('search', () => {
 		let testColour: string = '00FFAA';
+		createListings(2);
+
 		beforeEach(() => {
 			fixture.detectChanges();
 
@@ -141,19 +152,48 @@ describe('App', () => {
 
 			listingsDiv.forEach((div) => {
 				let elements = div.querySelectorAll('span');
-				expect(elements.length).to.equal(listingsResponse.results.length, 'there should be 2 listings');
+				expect(elements.length).to.equal(listingsResponse.length, 'there should be 2 listings');
 			});
 		});
 		it('displays listings with correct image and link', () => {
 			let listingsDiv = element.querySelector('.listings');
 			let listingLink = listingsDiv.querySelector('.itemIcon');
 			
-			expect(listingLink.getAttribute("href")).to.equal("fakeurl");
+			expect(listingLink.getAttribute("href")).to.equal("fakeurl0");
 
 			let img = listingsDiv.querySelector('img');
-			expect(img.getAttribute("src")).to.equal("fakeimageurl");
-			expect(img.getAttribute("title")).to.equal("fakeListing");
+			expect(img.getAttribute("src")).to.equal("fakeimageurl0");
+			expect(img.getAttribute("title")).to.equal("fakeListing0");
 		});
+	});
+
+	describe('paging', () => {
+		let testColour: string = '00FFAA';
+
+		createListings(50);
+
+		beforeEach(() => {
+			fixture.detectChanges();
+
+			element = fixture.debugElement.nativeElement;
+
+			let colourInput = element.querySelector('input');
+			colourInput.value = testColour;
+			colourInput.dispatchEvent(new Event('input'));
+
+			let searchButton = element.querySelector('button');
+			searchButton.click();
+			fixture.detectChanges();
+
+			getListingsSpy.calls.reset();
+			
+			component.nextPage(component.items[0]);
+		});
+		
+		it('gets next set of listings when requesting next page', () => {
+			expect(getListingsSpy.calls.count()).to.equal(1); // the initial calls + the next page call
+		});
+		
 	});
 	
 });
