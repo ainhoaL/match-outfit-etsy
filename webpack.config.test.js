@@ -1,6 +1,6 @@
 const webpack = require('webpack');
 const ENV = process.env.ENV = process.env.NODE_ENV = 'test';
-let config = require('./webpack.config.common');
+var config = require('./webpack.config.common');
 
 config.module.postLoaders = [
             /**
