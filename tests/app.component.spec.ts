@@ -33,7 +33,7 @@ let paletteResponse: Palette = {
 		name: "seaside margaritas."};
 
 let colourServiceStub, searchServiceStub, colourService, searchService, itemFactory, itemModelStub;
-let getPaletteSpy, createItemSpy, getListingsSpy;
+let getPaletteSpy, createItemSpy, getListingsSpies;
 let listingsResponse, listingsObservable;
 
 function createListings(numberOfListings: number) {
@@ -44,9 +44,21 @@ function createListings(numberOfListings: number) {
 			url: "fakeurl" + i,
 			title: "fakeListing" + i,
 			MainImage: {
-				url_75x75: "fakeimageurl" + i
+				url_75x75: "img/fakeimageurl" + i + ".png"
 			}
 		});
+	}
+}
+
+class ItemModelStub {
+	public listings;
+
+	constructor(service, public name, public type, public colour) {
+	}
+
+	getListings() {
+		this.listings = listingsResponse;
+		return Observable.of(listingsResponse);
 	}
 }
 
@@ -55,6 +67,7 @@ describe('App', () => {
 	let element, de, component;
 
 	beforeEach(() => {
+		getListingsSpies = [];
 
 		colourServiceStub = {
 			getPalette() {
@@ -68,15 +81,7 @@ describe('App', () => {
 		};
 
 		itemModelStub = {
-			constructor(service, name, type, color) {
-				this.name = name;
-				this.type = type;
-				this.colour = color;
-			},
-			listings: listingsResponse,
-			getListings() {
-				return Observable.of(listingsResponse);
-			}
+			
 		}
 
 		TestBed.configureTestingModule({ 
@@ -98,8 +103,11 @@ describe('App', () => {
 		itemFactory = fixture.debugElement.injector.get(ItemFactory)
 
 		getPaletteSpy = spyOn(colourService, 'getPalette').and.returnValue(Observable.of(paletteResponse));
-		createItemSpy = spyOn(itemFactory, 'create').and.returnValue(itemModelStub);
-		getListingsSpy = spyOn(itemModelStub, 'getListings').and.callThrough();
+		createItemSpy = spyOn(itemFactory, 'create').and.callFake(function(service, name, type, colour?, itemsPerPage?) {
+			let itemStub = new ItemModelStub(service, name, type, colour);
+			getListingsSpies.push(spyOn(itemStub, 'getListings').and.callThrough());
+			return itemStub;
+		});
 
 		component = fixture.componentInstance;
 	});
@@ -144,7 +152,8 @@ describe('App', () => {
     		expect(itemDivs.length).to.equal(itemTypes.length, 'there should be 5 items');
 		});
 		it('gets listings once per item type', () => {
-			expect(getListingsSpy.calls.count()).to.equal(itemTypes.length);
+			expect(getListingsSpies.length).to.equal(itemTypes.length);
+			expect(getListingsSpies[0].calls.count()).to.equal(1);
 		});
 		it('displays the listings per item type', () => {
 			let listingsDiv = element.querySelectorAll('.listingsRow');
@@ -162,7 +171,7 @@ describe('App', () => {
 			expect(listingLink.getAttribute("href")).to.equal("fakeurl0");
 
 			let img = listingsDiv.querySelector('img');
-			expect(img.getAttribute("src")).to.equal("fakeimageurl0");
+			expect(img.getAttribute("src")).to.equal("img/fakeimageurl0.png");
 			expect(img.getAttribute("title")).to.equal("fakeListing0");
 		});
 	});
@@ -185,15 +194,94 @@ describe('App', () => {
 			searchButton.click();
 			fixture.detectChanges();
 
-			getListingsSpy.calls.reset();
+			getListingsSpies[0].calls.reset();
 			
 			component.nextPage(component.items[0]);
 		});
 		
 		it('gets next set of listings when requesting next page', () => {
-			expect(getListingsSpy.calls.count()).to.equal(1); // the initial calls + the next page call
+			expect(getListingsSpies[0].calls.count()).to.equal(1); // the initial calls + the next page call
 		});
 		
+	});
+
+	describe('scrolling', () => {
+		let testColour: string = '00FFAA';
+		let scollingSpy;
+
+		beforeEach(() => {
+			scollingSpy = spyOn(component, 'scrollDiv').and.callThrough();
+		});
+
+		describe('when there are enough listings to scroll', () => {
+			let rightArrow, leftArrow;
+			
+			beforeEach(() => {
+				createListings(30);
+
+				fixture.detectChanges();
+
+				element = fixture.debugElement.nativeElement;
+
+				let colourInput = element.querySelector('input');
+				colourInput.value = testColour;
+				colourInput.dispatchEvent(new Event('input'));
+
+				let searchButton = element.querySelector('button');
+				searchButton.click();
+				fixture.detectChanges();
+
+				let listingsDiv = element.querySelectorAll('.listingsRow');
+				let parentDiv = listingsDiv[0];
+				
+				rightArrow = parentDiv.querySelector('.rightButton');
+				leftArrow = parentDiv.querySelector('.leftButton');
+
+			});
+
+			it('scrolling is enabled', () => {
+				expect(component.canScroll(component.items[0])).to.be.true;
+			});
+			
+			it('scrolls right when clicking right arrow', () => {
+
+				rightArrow.click();
+				fixture.detectChanges();
+
+				expect(scollingSpy.calls.first().args).to.deep.equal(["right", itemTypes[0]]);
+			});
+
+			it('scrolls left when clicking left arrow', () => {
+
+				leftArrow.click();
+				fixture.detectChanges();
+
+				expect(scollingSpy.calls.first().args).to.deep.equal(["left", itemTypes[0]]);
+			});
+		});
+
+		describe('when there are not enough listings to scroll', () => {
+			
+			beforeEach(() => {
+				createListings(2);
+
+				fixture.detectChanges();
+
+				element = fixture.debugElement.nativeElement;
+
+				let colourInput = element.querySelector('input');
+				colourInput.value = testColour;
+				colourInput.dispatchEvent(new Event('input'));
+
+				let searchButton = element.querySelector('button');
+				searchButton.click();
+				fixture.detectChanges();
+			});
+
+			it('scrolling is disabled', () => {
+				expect(component.canScroll(component.items[0])).to.be.false;
+			});
+		});
 	});
 	
 });

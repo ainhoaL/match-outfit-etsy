@@ -9,8 +9,8 @@ module.exports = function (config) {
       'karma-chrome-launcher',
       'karma-chai',
       'karma-coverage',
-      'karma-coverage-istanbul-reporter', 
-      'karma-webpack', 
+      'karma-coverage-istanbul-reporter',
+      'karma-webpack',
       'karma-sourcemap-loader',
       'karma-angular',
       'karma-typescript-preprocessor',
@@ -28,7 +28,8 @@ module.exports = function (config) {
     frameworks: ['jasmine'],
 
     files: [
-      {pattern: 'karma-test-shim.js', watched: true}
+      {pattern: 'karma-test-shim.js', watched: true},
+      {pattern: 'tests/fake.png', watched: false, included: false, served:true}
     ],
 
     preprocessors: {
@@ -45,7 +46,11 @@ module.exports = function (config) {
                 }
             ]
         },
-        
+
+    proxies: {
+        '/img/*': 'base/tests/fake.png'
+    },
+
     webpack: webpackConfig,
 
     webpackMiddleware: {
