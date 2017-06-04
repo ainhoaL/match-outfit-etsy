@@ -1,13 +1,13 @@
 import { Injectable } from '@angular/core';
-import { ColourService, Palette } from './Colour.service';
-import { SearchService } from './Search.service';
+import { ColourService, Palette } from './colour.service';
+import { SearchService } from './search.service';
 import { Observable } from 'rxjs';
 
 export let itemTypes = ["Earrings", "Necklace", "Dress", "Shoes", "Handbag"];
 
 @Injectable()
 export class ItemFactory {
-
+s
     constructor() {}
 
     create(searchService: SearchService, searchname: string, type: string, colour?: string, itemsPerPage?: number): Item {
@@ -51,7 +51,7 @@ export class Item {
                 } else {
                     return this.listings;
                 }
-            });       
+            });
             // TODO: handle error case
         } else {
             return Observable.of<any>(); // TODO: refactor so no need to return empty observable
