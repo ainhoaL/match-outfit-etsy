@@ -6,7 +6,7 @@ module.exports = function (config) {
     basePath: '',
     plugins: [
       'karma-jasmine',
-      'karma-chrome-launcher',
+      'karma-phantomjs-launcher',
       'karma-chai',
       'karma-coverage',
       'karma-coverage-istanbul-reporter',
@@ -21,7 +21,7 @@ module.exports = function (config) {
     colors: true,
     logLevel: config.LOG_INFO,
     autoWatch: true,
-    browsers: ['Chrome'],
+    browsers: ['PhantomJS'],
     singleRun: true,
     autoWatchBatchDelay: 300,
 
@@ -59,6 +59,11 @@ module.exports = function (config) {
 
     webpackServer: {
       noInfo: true
+    },
+
+    phantomjsLauncher: {
+      // Have phantomjs exit if a ResourceError is encountered (useful if karma exits without killing phantom)
+      exitOnResourceError: true
     }
   });
 };

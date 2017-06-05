@@ -81,11 +81,11 @@ describe('App', () => {
 		};
 
 		itemModelStub = {
-			
+
 		}
 
-		TestBed.configureTestingModule({ 
-			declarations: [AppComponent], 
+		TestBed.configureTestingModule({
+			declarations: [AppComponent],
 			imports: [ FormsModule, JsonpModule ],
 			providers: [ColourService, SearchService, ItemFactory],
 			schemas: [ NO_ERRORS_SCHEMA ]
@@ -112,7 +112,7 @@ describe('App', () => {
 		component = fixture.componentInstance;
 	});
 
-	it('creates the component', () => {  
+	it('creates the component', () => {
 		expect(component instanceof AppComponent).to.equal(true, 'should create AppComponent');
 	});
 
@@ -122,7 +122,7 @@ describe('App', () => {
     		expect(element.querySelectorAll('.itemRow').length).to.equal(0, 'there should be no items');
 		});
 	});
-	
+
 	describe('search', () => {
 		let testColour: string = '00FFAA';
 		createListings(2);
@@ -159,15 +159,15 @@ describe('App', () => {
 			let listingsDiv = element.querySelectorAll('.listingsRow');
 			expect(listingsDiv.length).to.equal(itemTypes.length, 'there should be listings for 5 items');
 
-			listingsDiv.forEach((div) => {
-				let elements = div.querySelectorAll('span');
-				expect(elements.length).to.equal(listingsResponse.length, 'there should be 2 listings');
-			});
+      for(let i = 0; i < listingsDiv.length; i++) {
+        let elements = listingsDiv[i].querySelectorAll('span');
+        expect(elements.length).to.equal(listingsResponse.length, 'there should be 2 listings');
+      }
 		});
 		it('displays listings with correct image and link', () => {
 			let listingsDiv = element.querySelector('.listings');
 			let listingLink = listingsDiv.querySelector('.itemIcon');
-			
+
 			expect(listingLink.getAttribute("href")).to.equal("fakeurl0");
 
 			let img = listingsDiv.querySelector('img');
@@ -195,14 +195,14 @@ describe('App', () => {
 			fixture.detectChanges();
 
 			getListingsSpies[0].calls.reset();
-			
+
 			component.nextPage(component.items[0]);
 		});
-		
+
 		it('gets next set of listings when requesting next page', () => {
 			expect(getListingsSpies[0].calls.count()).to.equal(1); // the initial calls + the next page call
 		});
-		
+
 	});
 
 	describe('scrolling', () => {
@@ -215,7 +215,7 @@ describe('App', () => {
 
 		describe('when there are enough listings to scroll', () => {
 			let rightArrow, leftArrow;
-			
+
 			beforeEach(() => {
 				createListings(30);
 
@@ -233,7 +233,7 @@ describe('App', () => {
 
 				let listingsDiv = element.querySelectorAll('.listingsRow');
 				let parentDiv = listingsDiv[0];
-				
+
 				rightArrow = parentDiv.querySelector('.rightButton');
 				leftArrow = parentDiv.querySelector('.leftButton');
 
@@ -242,7 +242,7 @@ describe('App', () => {
 			it('scrolling is enabled', () => {
 				expect(component.canScroll(component.items[0])).to.be.true;
 			});
-			
+
 			it('scrolls right when clicking right arrow', () => {
 
 				rightArrow.click();
@@ -261,7 +261,7 @@ describe('App', () => {
 		});
 
 		describe('when there are not enough listings to scroll', () => {
-			
+
 			beforeEach(() => {
 				createListings(2);
 
@@ -283,5 +283,5 @@ describe('App', () => {
 			});
 		});
 	});
-	
+
 });
