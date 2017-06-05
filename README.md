@@ -1,6 +1,6 @@
 # match-outfit-etsy
 
-https://travis-ci.org/ainhoaL/match-outfit-etsy.svg?branch=master
+[![Build Status](https://travis-ci.org/ainhoaL/match-outfit-etsy.svg?branch=master)](https://travis-ci.org/ainhoaL/match-outfit-etsy)
 
 Choose a colour and the tool finds items in etsy that have colours in a related palette for a matching outfit.
 
