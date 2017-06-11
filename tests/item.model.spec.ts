@@ -29,6 +29,10 @@ describe('Item Model', () => {
             MainImage: {
                 url_75x75: "fakeimageurl2"
             }
+        }, {
+            url: "fakeurl3",
+            title: "fakeListing3",
+            is_supply: "false"
         }]
     }
 

@@ -36,7 +36,7 @@ export class Item {
 
                 for(let i=0; i < results.length; i++) {
                     // TODO: How to filter off things like shipping upgrades?
-                    if(results[i].is_supply !== "true") {
+                    if(results[i].is_supply !== "true" && results[i].MainImage) {
                         nonSupplies.push(results[i]);
                     }
                 }
