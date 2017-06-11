@@ -5,7 +5,7 @@ console.log(process.env.NODE_ENV);
 switch (process.env.NODE_ENV.trim()) {
     case 'prod':
     case 'production':
-        module.exports = require('./webpack.config.dev');
+        module.exports = require('./webpack.config.prod');
         break;
     case 'test':
     case 'testing':

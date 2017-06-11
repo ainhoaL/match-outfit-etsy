@@ -1,9 +1,11 @@
+var webpack = require('webpack');
 var path = require('path');
 
 module.exports = {
     entry:  {
         javascript: './app/main.ts',
-        html: './app/index.html'
+        html: './app/index.html',
+        vendor: './polyfills.browser.ts'
     },
 
     resolve: {
@@ -30,5 +32,14 @@ module.exports = {
     output: {
         filename: 'main.js',
         path: path.join(process.cwd(), 'dist')
-    }
+    },
+
+    plugins: [
+      new webpack.optimize.CommonsChunkPlugin({
+        name: 'vendor',
+        chunks: ['vbundle'],
+        filename: 'vendor.js',
+        minChunks: Infinity
+      })
+    ]
 }

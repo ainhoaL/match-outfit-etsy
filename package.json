@@ -3,14 +3,15 @@
   "version": "1.0.0",
   "description": "Choose a colour and the tool finds items in etsy that have colours in a related palette for a matching outfit.",
   "scripts": {
-    "start": "set NODE_ENV=development && webpack-dev-server --hot --inline",
+    "start": "webpack-dev-server --config webpack.config.dev.js --hot --inline",
     "postinstall": "typings install",
     "typings": "typings",
     "test": "set NODE_ENV=test && karma start karma.config.js",
     "posttest": "npm run coverage",
     "coverage": "npm run coverage:remap && npm run coverage:report",
     "coverage:remap": "remap-istanbul -i coverage/coverage.json -o coverage/coverage.json -t json -e node_modules,tests,karma-test-shim.js",
-    "coverage:report": "istanbul report"
+    "coverage:report": "istanbul report",
+    "build": "webpack --config webpack.config.prod.js"
   },
   "repository": {
     "type": "git",
