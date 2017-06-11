@@ -66,7 +66,7 @@ describe('Item Model', () => {
                 item = itemFactory.create(fakeSearchService, 'name1', 'type1', 'FF0033', 1);
                 expect(item.itemsPerPage).to.equal(1);
 
-                item.getListings().subscribe(() => {});
+                item.getListings();
             });
 
             it('gets page from search service', () => {
@@ -96,7 +96,7 @@ describe('Item Model', () => {
 
                     searchResponse.pagination.next_page = null;
 
-                    item.getListings().subscribe(() => {});
+                    item.getListings();
                 });
 
                 it('does not fetch a page from the search service', () => {
@@ -113,7 +113,7 @@ describe('Item Model', () => {
 
                     searchResponse.pagination.next_page = 2;
 
-                    item.getListings().subscribe(() => {});
+                    item.getListings();
                 });
 
                 it('fetches next page from the search service', () => {
@@ -133,7 +133,7 @@ describe('Item Model', () => {
 
                 item.nextPage = null;
 
-                item.getListings().subscribe(() => {});
+                item.getListings();
             });
 
             it('does notfetch a page from the search service', () => {
@@ -149,7 +149,7 @@ describe('Item Model', () => {
 
                 item.searchCompleted = false;
 
-                item.getListings().subscribe(() => {});
+                item.getListings();
             });
 
             it('does notfetch a page from the search service', () => {

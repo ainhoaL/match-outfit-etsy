@@ -95,9 +95,7 @@ export class AppComponent {
     }
 
     getListingsForItem(item: Item) {
-        item.getListings().subscribe((results) => {
-            // TODO: do we need to do anything here?
-        });
+        item.getListings();
     }
 
     canScroll(item:Item): boolean {

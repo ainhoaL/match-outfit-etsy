@@ -24,12 +24,12 @@ export class Item {
     constructor(public searchService: SearchService, public name: string, public type: string, public colour?: string, public itemsPerPage = 25) {
     }
 
-    getListings(): Observable<any> {
+    getListings(): void {
         // Do not try to fetch next page if there is no next page (end of list) or
         // if we are already fetching a page - avoid fetching same page multiple times
         if (this.nextPage && this.searchCompleted) {
             this.searchCompleted = false;
-            return this.searchService.getListings(this.type, this.colour, this.nextPage).map((result) => {
+            this.searchService.getListings(this.type, this.colour, this.nextPage).subscribe((result) => {
                 this.searchCompleted = true;
                 let nonSupplies = [];
                 let results = result.results;
@@ -47,14 +47,10 @@ export class Item {
 
                 // Do we have enough items to fill a whole page?
                 if (this.listings.length < this.itemsPerPage && this.nextPage) {
-                    this.getListings().subscribe(() => {}); //Retry to get more
-                } else {
-                    return this.listings;
+                    this.getListings(); //Retry to get more
                 }
             });
             // TODO: handle error case
-        } else {
-            return Observable.of<any>(); // TODO: refactor so no need to return empty observable
         }
     }
 }
