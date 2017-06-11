@@ -7,18 +7,18 @@ export interface Palette {
     id: number,
     name: string,
     colours: string[]
-} 
+}
 
 @Injectable()
 export class ColourService {
-    baseUrl: string = "http://www.colourlovers.com/api/palettes?format=json&jsonCallback=JSONP_CALLBACK";
+    baseUrl: string = "https://www.colourlovers.com/api/palettes?format=json&jsonCallback=JSONP_CALLBACK";
     constructor(private jsonp: Jsonp) {
 
     }
 
     getPalette(colours: string[]): Observable<Palette> {
         let queryUrl = this.baseUrl + "&hex=" + colours.toString();
-       
+
         return this.jsonp.get(queryUrl).map((response: any) => {
             let paletteResponse = response._body[0];
             return {
