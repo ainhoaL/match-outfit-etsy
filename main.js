@@ -37753,7 +37753,7 @@
 	var ColourService = (function () {
 	    function ColourService(jsonp) {
 	        this.jsonp = jsonp;
-	        this.baseUrl = "http://www.colourlovers.com/api/palettes?format=json&jsonCallback=JSONP_CALLBACK";
+	        this.baseUrl = "https://www.colourlovers.com/api/palettes?format=json&jsonCallback=JSONP_CALLBACK";
 	    }
 	    ColourService.prototype.getPalette = function (colours) {
 	        var queryUrl = this.baseUrl + "&hex=" + colours.toString();
