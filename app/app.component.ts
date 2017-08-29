@@ -16,6 +16,7 @@ const itemsPerPage = 25;
 
   <div>
   Enter a colour in your palette: <input [(ngModel)]="colourToMatch" placeholder="name" (keyup.enter)="getItems()" />
+  <input [(colorPicker)]="colourToMatch" [style.background]="colourToMatch" [value]="colourToMatch" [cpPresetColors]="availableColours" />
   <button (click)="getItems()">Get items</button>
   </div>
   <div class="itemRow" *ngFor="let item of items">
@@ -46,36 +47,37 @@ const itemsPerPage = 25;
 export class AppComponent {
     palette: Palette = null;
     items: Item[] = []
-    colourToMatch: string = "00FF33";
+    colourToMatch: string = "#00FF33";
+    color: string = '#00FF33';
+    availableColours: string[];
 
     constructor(private colourService: ColourService, private searchService: SearchService, private itemFactory: ItemFactory) {
-
+        this.colourService.getAvailableColours().subscribe((colours: string[]) => {
+            this.availableColours = colours.slice(0, 24);
+        });
     }
 
     getItems() {
         this.items = [];
-        this.colourService.getPalette([this.colourToMatch])
-        .subscribe(
-            (palette: Palette) => {
-                if (palette.colours.length > 0) {
-                    this.palette = palette;
+        let palette = this.colourService.getPalette(this.colourToMatch);
+        console.log(" PALETTE ", palette);
+        if (palette.colours.length > 0) {
+            this.palette = palette;
 
-                    let i = 0;
-                    this.palette.colours.forEach(colour => {
-                        let item = this.itemFactory.create(this.searchService, itemTypes[i], itemTypes[i], colour, itemsPerPage);
+            let i = 0;
+            this.palette.colours.forEach(colour => {
+                
+                colour = colour.replace('#','');
+                console.log(colour);
+                let item = this.itemFactory.create(this.searchService, itemTypes[i], itemTypes[i], colour, itemsPerPage);
 
-                        this.items.push(item);
-                        this.getListingsForItem(this.items[i]);
-                        i++;
-                    });
-                } else {
-                    console.log("no palette found"); // TODO: show message
-                }
-            },
-            (error) => {
-                console.error(error); // TODO: show an error?
-            }
-        );
+                this.items.push(item);
+                this.getListingsForItem(this.items[i]);
+                i++;
+            });
+        } else {
+            console.log("no palette found"); // TODO: show message
+        }
     }
 
     nextPage(item: Item) {

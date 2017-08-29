@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 import 'rxjs/add/operator/map';
 
 // To run this get an etsy API key
-var key = "kd6o1003r5c74jr6uikpe7j4";
+var key;
 
 @Injectable()
 export class SearchService {
@@ -14,6 +14,7 @@ export class SearchService {
     }
 
     getListings(type: string, colour: string, page: number): Observable<any> {
+        console.log(colour);
         let listingsByColour = this.baseUrl + "&color=" + colour + "&color_accuracy=20&includes=MainImage&tags=" + type + "&page=" + page;
         return this.jsonp.get(listingsByColour).map((response: Response) => {
             return response.json();
