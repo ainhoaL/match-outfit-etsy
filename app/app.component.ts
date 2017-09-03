@@ -15,7 +15,7 @@ const itemsPerPage = 25;
   <h3>Browse Etsy items by colour palette - <i>Match your outfit by palette</i></h3>
   <div>
   Enter a colour in your palette: 
-  <input [(colorPicker)]="colourToMatch" (keyup.enter)="getItems()" [style.background]="colourToMatch" [value]="colourToMatch" [cpPresetColors]="availableColours" />
+  <input [(colorPicker)]="colourToMatch" (keyup.enter)="getItems()" [style.background]="colourToMatch" [(ngModel)]="colourToMatch" [cpPresetColors]="availableColours" />
   <button (click)="getItems()">Get items</button>
   </div>
   <div class="itemRow" *ngFor="let item of items">
@@ -47,7 +47,6 @@ export class AppComponent implements OnInit {
     palette: Palette = null;
     items: Item[] = []
     colourToMatch: string = "#00FF33";
-    color: string = '#00FF33';
     availableColours: string[];
 
     constructor(private colourService: ColourService, private searchService: SearchService, private itemFactory: ItemFactory) {

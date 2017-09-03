@@ -21,18 +21,6 @@ export class ColourService {
     }
 
     getPalette(colour: string): Palette {
-        // let queryUrl = this.baseUrl + "&hex=" + colours.toString();
-
-        // return this.jsonp.get(queryUrl).map((response: any) => {
-        //     let paletteResponse = response._body[0];
-        //     return {
-        //             id: paletteResponse ? paletteResponse.id : 0,
-        //             name: paletteResponse ? paletteResponse.title : "",
-        //             colours: paletteResponse ? paletteResponse.colors : []
-        //         };
-        // });
-
-        
         if (this.palettes) {
             let closestColour = this.closestMatchingColour(colour);
 
@@ -53,7 +41,7 @@ export class ColourService {
     }
 
     getAvailableColours(): Observable<string[]> {
-        return this.http.get('../node_modules/nice-color-palettes/100.json')
+        return this.http.get('./assets/100colours.json')
             .map((response: any) => {
                 this.palettes = JSON.parse(response._body);
                 let colours = [].concat.apply([], this.palettes);

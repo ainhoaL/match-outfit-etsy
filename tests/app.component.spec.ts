@@ -143,7 +143,7 @@ describe('App', () => {
 		});
 		it('sends right colour to colour service', () => {
 			let callArgs = getPaletteSpy.calls.first().args[0];
-			expect(callArgs).to.deep.equal(testColour);
+			expect(callArgs).to.equal(testColour);
 		});
 		it('gets items to the component', () => {
 			expect(component.items.length).to.equal(itemTypes.length);
