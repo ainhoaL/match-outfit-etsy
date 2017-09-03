@@ -37672,8 +37672,7 @@
 	        this.itemFactory = itemFactory;
 	        this.palette = null;
 	        this.items = [];
-	        this.colourToMatch = "#00FF33";
-	        this.color = '#00FF33';
+	        this.colourToMatch = "#C02942";
 	    }
 	    AppComponent.prototype.ngOnInit = function () {
 	        var _this = this;
@@ -37731,7 +37730,7 @@
 	    core_1.Component({
 	        selector: 'my-app',
 	        providers: [colour_service_1.ColourService, search_service_1.SearchService, item_model_1.ItemFactory],
-	        template: "\n  <h3>Browse Etsy items by colour palette - <i>Match your outfit by palette</i></h3>\n  <div>\n  Enter a colour in your palette: \n  <input [(colorPicker)]=\"colourToMatch\" (keyup.enter)=\"getItems()\" [style.background]=\"colourToMatch\" [value]=\"colourToMatch\" [cpPresetColors]=\"availableColours\" />\n  <button (click)=\"getItems()\">Get items</button>\n  </div>\n  <div class=\"itemRow\" *ngFor=\"let item of items\">\n    <span>\n        <div style=\"display: inline-block; width: 20px; height: 20px\" [ngStyle]=\"{'background-color': item.colour}\"></div>\n        {{item.name}}\n        <span *ngIf=\"!item.searchCompleted\"> - Loading...</span>\n        <span *ngIf=\"item.searchCompleted && item.listings.length === 0\"> - No items found</span>\n    </span>\n    <div class=\"listingsRow\">\n        <button *ngIf=\"canScroll(item)\" (click)=\"scrollDiv('left', item.name)\" class=\"arrowButton leftButton\"><img src=\"" + leftArrow + "\" /></button>\n        <div id=\"{{item.name}}\" class=\"listings\"\n                infinite-scroll\n                [infiniteScrollDistance]=\"2\"\n                [infiniteScrollThrottle]=\"300\"\n                [scrollWindow]=\"false\"\n                [horizontal]=\"true\"\n                (scrolled)=\"nextPage(item)\">\n                <span *ngFor=\"let listing of item.listings\">\n                    <a href=\"{{listing.url}}\" target=\"blank\" class=\"itemIcon\"><img src={{listing.MainImage.url_75x75}} title={{listing.title}}/></a>\n                </span>\n            </div>\n        <button *ngIf=\"canScroll(item)\" (click)=\"scrollDiv('right', item.name)\" class=\"arrowButton rightButton\"><img src=\"" + rightArrow + "\" /></button>\n    </div>\n  </div>\n  "
+	        template: "\n  <h3>Browse Etsy items by colour palette - <i>Match your outfit by palette</i></h3>\n  <div>\n  Enter a colour in your palette: \n  <input [(colorPicker)]=\"colourToMatch\" (keyup.enter)=\"getItems()\" [style.background]=\"colourToMatch\" [(ngModel)]=\"colourToMatch\" [cpPresetColors]=\"availableColours\" />\n  <button (click)=\"getItems()\">Get items</button>\n  </div>\n  <div class=\"itemRow\" *ngFor=\"let item of items\">\n    <span>\n        <div style=\"display: inline-block; width: 20px; height: 20px\" [ngStyle]=\"{'background-color': item.colour}\"></div>\n        {{item.name}}\n        <span *ngIf=\"!item.searchCompleted\"> - Loading...</span>\n        <span *ngIf=\"item.searchCompleted && item.listings.length === 0\"> - No items found</span>\n    </span>\n    <div class=\"listingsRow\">\n        <button *ngIf=\"canScroll(item)\" (click)=\"scrollDiv('left', item.name)\" class=\"arrowButton leftButton\"><img src=\"" + leftArrow + "\" /></button>\n        <div id=\"{{item.name}}\" class=\"listings\"\n                infinite-scroll\n                [infiniteScrollDistance]=\"2\"\n                [infiniteScrollThrottle]=\"300\"\n                [scrollWindow]=\"false\"\n                [horizontal]=\"true\"\n                (scrolled)=\"nextPage(item)\">\n                <span *ngFor=\"let listing of item.listings\">\n                    <a href=\"{{listing.url}}\" target=\"blank\" class=\"itemIcon\"><img src={{listing.MainImage.url_75x75}} title={{listing.title}}/></a>\n                </span>\n            </div>\n        <button *ngIf=\"canScroll(item)\" (click)=\"scrollDiv('right', item.name)\" class=\"arrowButton rightButton\"><img src=\"" + rightArrow + "\" /></button>\n    </div>\n  </div>\n  "
 	    }),
 	    __metadata("design:paramtypes", [colour_service_1.ColourService, search_service_1.SearchService, item_model_1.ItemFactory])
 	], AppComponent);
@@ -37762,15 +37761,6 @@
 	        this.baseUrl = "https://www.colourlovers.com/api/palettes?format=json&jsonCallback=JSONP_CALLBACK";
 	    }
 	    ColourService.prototype.getPalette = function (colour) {
-	        // let queryUrl = this.baseUrl + "&hex=" + colours.toString();
-	        // return this.jsonp.get(queryUrl).map((response: any) => {
-	        //     let paletteResponse = response._body[0];
-	        //     return {
-	        //             id: paletteResponse ? paletteResponse.id : 0,
-	        //             name: paletteResponse ? paletteResponse.title : "",
-	        //             colours: paletteResponse ? paletteResponse.colors : []
-	        //         };
-	        // });
 	        if (this.palettes) {
 	            var closestColour = this.closestMatchingColour(colour);
 	            for (var i = 0; i < this.palettes.length; i++) {
@@ -37789,7 +37779,7 @@
 	    };
 	    ColourService.prototype.getAvailableColours = function () {
 	        var _this = this;
-	        return this.http.get('../node_modules/nice-color-palettes/100.json')
+	        return this.http.get('./assets/100colours.json')
 	            .map(function (response) {
 	            _this.palettes = JSON.parse(response._body);
 	            var colours = [].concat.apply([], _this.palettes);
