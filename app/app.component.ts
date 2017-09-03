@@ -60,7 +60,6 @@ export class AppComponent {
     getItems() {
         this.items = [];
         let palette = this.colourService.getPalette(this.colourToMatch);
-        console.log(" PALETTE ", palette);
         if (palette.colours.length > 0) {
             this.palette = palette;
 
@@ -68,7 +67,6 @@ export class AppComponent {
             this.palette.colours.forEach(colour => {
                 
                 colour = colour.replace('#','');
-                console.log(colour);
                 let item = this.itemFactory.create(this.searchService, itemTypes[i], itemTypes[i], colour, itemsPerPage);
 
                 this.items.push(item);

@@ -29,8 +29,7 @@ export function click(el: DebugElement | HTMLElement, eventObj: any = ButtonClic
 
 let paletteResponse: Palette = {
 		colours: ["336666", "003333", "339966", "33CC66", "00FF33"],
-		id: 1,
-		name: "seaside margaritas."};
+	};
 
 let colourServiceStub, searchServiceStub, colourService, searchService, itemFactory, itemModelStub;
 let getPaletteSpy, createItemSpy, getListingsSpies;
@@ -86,7 +85,7 @@ xdescribe('App', () => {
 
 		TestBed.configureTestingModule({
 			declarations: [AppComponent],
-			imports: [ FormsModule, JsonpModule ],
+			imports: [ FormsModule, JsonpModule, HttpModule ],
 			providers: [ColourService, SearchService, ItemFactory],
 			schemas: [ NO_ERRORS_SCHEMA ]
 			// Why doesn't this work? It would be nice to stub them out, then maybe we don't need to import Http and Jsonp modules

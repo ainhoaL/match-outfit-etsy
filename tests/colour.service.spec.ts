@@ -2,8 +2,8 @@ var chai = require('chai');
 var expect = chai.expect;
 
 import {
-    JsonpModule,
-    Jsonp,
+    HttpModule,
+    Http,
     BaseRequestOptions,
     Response
 } from "@angular/http";
@@ -11,20 +11,24 @@ import { TestBed } from '@angular/core/testing';
 import { MockBackend } from "@angular/http/testing";
 import { ColourService, Palette } from '../app/colour.service';
 
-let fakeResponse = [{
-        colors: ["336666", "003333", "339966", "33CC66", "00FF33"],
-        id: 1,
-        title: "fake palette name"
-    }, {
-        colors: ["332266", "00FF55", "77AA88", "118899", "776622"],
-        id: 2,
-        title: "second palette"
-    }];
+let nearestColor = require('nearest-color');
+
+let fakeResponse = '[["#889977", "#003333", "#339966", "#33CC66", "#00FF33"], ["#339966", "#00FF55", "#77AA88", "#118899", "#776622"]]';
 
 let expectedPalette: Palette = {
-		colours: ["336666", "003333", "339966", "33CC66", "00FF33"],
-		id: 1,
-		name: "fake palette name"};
+		colours: ["#889977", "#003333", "#339966", "#33CC66", "#00FF33"]
+    };
+
+let fakePalettes: string[][] = [
+    ["#889977", "#003333", "#339966", "#33CC66", "#00FF33"],
+    ["#332266", "#00FF55", "#77AA88", "#118899", "#776622"]
+]
+let fakeMatchingColour = "#889977";
+let fakeMatchingFunction = (colour: string): string => {
+    return fakeMatchingColour;
+}
+
+let expectedAvailableColours = ["#889977", "#003333", "#339966", "#33CC66", "#00FF33", "#00FF55", "#77AA88", "#118899", "#776622"];
 
 describe('Colour Service', () => {
     let backend: MockBackend;
@@ -32,14 +36,14 @@ describe('Colour Service', () => {
 
     beforeEach(() => {
         TestBed.configureTestingModule({
-            imports: [JsonpModule],
+            imports: [HttpModule],
             providers: [
                 ColourService,
                 MockBackend,
                 BaseRequestOptions,
                 {
-                    provide: Jsonp,
-                    useFactory: (backend, options) => new Jsonp(backend, options),
+                    provide: Http,
+                    useFactory: (backend, options) => new Http(backend, options),
                     deps: [MockBackend, BaseRequestOptions]
                 }
             ]
@@ -49,21 +53,87 @@ describe('Colour Service', () => {
 
         service = TestBed.get(ColourService);
         service.baseUrl = "fakeUrl";
-
+        service.closestMatchingColour = fakeMatchingFunction;
 	});
 
-    describe("search one colour", () => {    
+    describe("#getPalette", () => {
+        beforeEach(() => {
+            service.palettes = fakePalettes;
+        });
+
         describe("success", () => {
-            it("returns one palette correctly formatted", () => {
-                backend.connections.subscribe(connection => {
-                    expect(connection.request.url).to.equal("fakeUrl&hex=336666");
-                    connection.mockRespond(new Response(<any>{
-                        body: fakeResponse
-                    }));
+
+            describe('when the closest matching color exists in the palette', () => {
+                beforeEach(() => {
+                    fakeMatchingColour = "#889977";
                 });
 
-                service.getPalette(["336666"]).subscribe((palette: Palette) => {
+                it("returns one palette correctly formatted", () => {
+                    backend.connections.subscribe(connection => {
+                        expect(connection.request.url).to.equal("nice-color-palettes/100.json");
+                        connection.mockRespond(new Response(<any>{
+                            _body: fakeResponse
+                        }));
+                    });
+
+                    let palette = service.getPalette("#336666");
+
                     expect(palette).to.deep.equal(expectedPalette);
+                });
+            });
+
+            describe('when the closest matching color does not exist in the palette', () => {
+                beforeEach(() => {
+                    fakeMatchingColour = "#AAFF99";
+                });
+
+                it("returns an empty palette object", () => {
+                    let palette = service.getPalette("#336666");
+
+                    expect(palette).to.deep.equal({colours: []});
+                });
+            });
+
+            describe('when there is no palette', () => {
+                beforeEach(() => {
+                    fakeMatchingColour = "#889977";
+                    service.palettes = null;
+                });
+
+                it("returns an empty palette object", () => {
+                    let palette = service.getPalette("#336666");
+
+                    expect(palette).to.deep.equal({colours: []});
+                });
+            });
+            
+        });
+    });
+
+    describe('#getAvailableColours', () => {
+        beforeEach(() => {
+            spyOn(nearestColor, 'from').and.returnValue(() => {});
+        });
+
+        describe("success", () => {
+
+            describe('loads palette from json file', () => {
+                beforeEach(() => {
+                    fakeMatchingColour = "#889977";
+                });
+
+                it("loads palette from json file", () => {
+                    backend.connections.subscribe(connection => {
+                        console.log(connection.request.url);
+                        expect(connection.request.url).to.equal("../node_modules/nice-color-palettes/100.json");
+                        connection.mockRespond(new Response(<any>{
+                            body: fakeResponse
+                        }));
+                    });
+
+                    service.getAvailableColours().subscribe((colours) => {
+                       expect(colours).to.deep.equal(expectedAvailableColours); 
+                    });
                 });
             });
         });
@@ -76,20 +146,5 @@ describe('Colour Service', () => {
                 });
             });
         });
-    });
-
-    describe("search multiple colours", () => {    
-            it("returns one palette correctly formatted", () => {
-                backend.connections.subscribe(connection => {
-                    expect(connection.request.url).to.equal("fakeUrl&hex=336666,003333,00FF33");
-                    connection.mockRespond(new Response(<any>{
-                        body: fakeResponse
-                    }));
-                });
-
-                service.getPalette(["336666", "003333", "00FF33"]).subscribe((palette: Palette) => {
-                    expect(palette).to.deep.equal(expectedPalette);
-                });
-            });
     });
 });

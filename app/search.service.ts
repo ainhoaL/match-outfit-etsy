@@ -14,7 +14,6 @@ export class SearchService {
     }
 
     getListings(type: string, colour: string, page: number): Observable<any> {
-        console.log(colour);
         let listingsByColour = this.baseUrl + "&color=" + colour + "&color_accuracy=20&includes=MainImage&tags=" + type + "&page=" + page;
         return this.jsonp.get(listingsByColour).map((response: Response) => {
             return response.json();
