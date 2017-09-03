@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ColourService, Palette } from './colour.service';
 import { SearchService } from './search.service';
 import { Item, ItemFactory, itemTypes } from './item.model';
@@ -13,9 +13,9 @@ const itemsPerPage = 25;
   providers: [ColourService, SearchService, ItemFactory],
   template: `
   <h3>Browse Etsy items by colour palette - <i>Match your outfit by palette</i></h3>
-
   <div>
-  Enter a colour in your palette: <input [(ngModel)]="colourToMatch" placeholder="name" (keyup.enter)="getItems()" />
+  Enter a colour in your palette: 
+  <input [(colorPicker)]="colourToMatch" (keyup.enter)="getItems()" [style.background]="colourToMatch" [(ngModel)]="colourToMatch" [cpPresetColors]="availableColours" />
   <button (click)="getItems()">Get items</button>
   </div>
   <div class="itemRow" *ngFor="let item of items">
@@ -43,39 +43,41 @@ const itemsPerPage = 25;
   </div>
   `
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
     palette: Palette = null;
     items: Item[] = []
-    colourToMatch: string = "00FF33";
+    colourToMatch: string = "#C02942";
+    availableColours: string[];
 
     constructor(private colourService: ColourService, private searchService: SearchService, private itemFactory: ItemFactory) {
+        
+    }
 
+    ngOnInit() {
+        this.colourService.getAvailableColours().subscribe((colours: string[]) => {
+            this.availableColours = colours.slice(0, 24);
+        });
     }
 
     getItems() {
         this.items = [];
-        this.colourService.getPalette([this.colourToMatch])
-        .subscribe(
-            (palette: Palette) => {
-                if (palette.colours.length > 0) {
-                    this.palette = palette;
+        let palette = this.colourService.getPalette(this.colourToMatch);
+        if (palette.colours.length > 0) {
+            this.palette = palette;
 
-                    let i = 0;
-                    this.palette.colours.forEach(colour => {
-                        let item = this.itemFactory.create(this.searchService, itemTypes[i], itemTypes[i], colour, itemsPerPage);
+            let i = 0;
+            this.palette.colours.forEach(colour => {
+                
+                colour = colour.replace('#','');
+                let item = this.itemFactory.create(this.searchService, itemTypes[i], itemTypes[i], colour, itemsPerPage);
 
-                        this.items.push(item);
-                        this.getListingsForItem(this.items[i]);
-                        i++;
-                    });
-                } else {
-                    console.log("no palette found"); // TODO: show message
-                }
-            },
-            (error) => {
-                console.error(error); // TODO: show an error?
-            }
-        );
+                this.items.push(item);
+                this.getListingsForItem(this.items[i]);
+                i++;
+            });
+        } else {
+            console.log("no palette found"); // TODO: show message
+        }
     }
 
     nextPage(item: Item) {

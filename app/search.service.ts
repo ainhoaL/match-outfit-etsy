@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 import 'rxjs/add/operator/map';
 
 // To run this get an etsy API key
-var key = "kd6o1003r5c74jr6uikpe7j4";
+var key;
 
 @Injectable()
 export class SearchService {
