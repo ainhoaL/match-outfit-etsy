@@ -28,11 +28,12 @@ export function click(el: DebugElement | HTMLElement, eventObj: any = ButtonClic
 }
 
 let paletteResponse: Palette = {
-		colours: ["336666", "003333", "339966", "33CC66", "00FF33"],
+		colours: ["#336666", "#003333", "#339966", "#33CC66", "#00FF33"]
 	};
+let availableColoursResponse = ["#336666", "#003333", "#339966"];
 
 let colourServiceStub, searchServiceStub, colourService, searchService, itemFactory, itemModelStub;
-let getPaletteSpy, createItemSpy, getListingsSpies;
+let getPaletteSpy, createItemSpy, getListingsSpies, getAvailableColoursSpy;
 let listingsResponse, listingsObservable;
 
 function createListings(numberOfListings: number) {
@@ -61,7 +62,7 @@ class ItemModelStub {
 	}
 }
 
-xdescribe('App', () => {
+describe('App', () => {
 	let fixture;
 	let element, de, component;
 
@@ -101,7 +102,8 @@ xdescribe('App', () => {
 		searchService = fixture.debugElement.injector.get(SearchService);
 		itemFactory = fixture.debugElement.injector.get(ItemFactory)
 
-		getPaletteSpy = spyOn(colourService, 'getPalette').and.returnValue(Observable.of(paletteResponse));
+		getPaletteSpy = spyOn(colourService, 'getPalette').and.returnValue(paletteResponse);
+		getAvailableColoursSpy = spyOn(colourService, 'getAvailableColours').and.returnValue(Observable.of(availableColoursResponse));
 		createItemSpy = spyOn(itemFactory, 'create').and.callFake(function(service, name, type, colour?, itemsPerPage?) {
 			let itemStub = new ItemModelStub(service, name, type, colour);
 			getListingsSpies.push(spyOn(itemStub, 'getListings').and.callThrough());
@@ -141,7 +143,7 @@ xdescribe('App', () => {
 		});
 		it('sends right colour to colour service', () => {
 			let callArgs = getPaletteSpy.calls.first().args[0];
-			expect(callArgs).to.deep.equal([testColour]);
+			expect(callArgs).to.deep.equal(testColour);
 		});
 		it('gets items to the component', () => {
 			expect(component.items.length).to.equal(itemTypes.length);

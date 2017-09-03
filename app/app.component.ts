@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ColourService, Palette } from './colour.service';
 import { SearchService } from './search.service';
 import { Item, ItemFactory, itemTypes } from './item.model';
@@ -44,7 +44,7 @@ const itemsPerPage = 25;
   </div>
   `
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
     palette: Palette = null;
     items: Item[] = []
     colourToMatch: string = "#00FF33";
@@ -52,6 +52,10 @@ export class AppComponent {
     availableColours: string[];
 
     constructor(private colourService: ColourService, private searchService: SearchService, private itemFactory: ItemFactory) {
+        
+    }
+
+    ngOnInit() {
         this.colourService.getAvailableColours().subscribe((colours: string[]) => {
             this.availableColours = colours.slice(0, 24);
         });

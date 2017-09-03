@@ -53,6 +53,7 @@ export class ColourService {
     }
 
     getAvailableColours(): Observable<string[]> {
+        console.log("WHYYYYY");
         return this.http.get('../node_modules/nice-color-palettes/100.json')
             .map((response: any) => {
                 this.palettes = JSON.parse(response._body);

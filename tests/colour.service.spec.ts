@@ -124,7 +124,6 @@ describe('Colour Service', () => {
 
                 it("loads palette from json file", () => {
                     backend.connections.subscribe(connection => {
-                        console.log(connection.request.url);
                         expect(connection.request.url).to.equal("../node_modules/nice-color-palettes/100.json");
                         connection.mockRespond(new Response(<any>{
                             body: fakeResponse
