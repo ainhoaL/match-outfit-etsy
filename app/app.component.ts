@@ -46,7 +46,7 @@ const itemsPerPage = 25;
 export class AppComponent implements OnInit {
     palette: Palette = null;
     items: Item[] = []
-    colourToMatch: string = "#00FF33";
+    colourToMatch: string = "#C02942";
     availableColours: string[];
 
     constructor(private colourService: ColourService, private searchService: SearchService, private itemFactory: ItemFactory) {
